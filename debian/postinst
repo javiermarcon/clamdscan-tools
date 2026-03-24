@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+mkdir -p /var/log/clamdscan-tools
+mkdir -p /var/lib/clamdscan-tools/state
+mkdir -p /var/lib/clamdscan-tools/infected
+
+chmod 755 /var/log/clamdscan-tools
+chmod 755 /var/lib/clamdscan-tools
+chmod 755 /var/lib/clamdscan-tools/state
+chmod 755 /var/lib/clamdscan-tools/infected
+
+exit 0

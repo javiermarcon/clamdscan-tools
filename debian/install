@@ -1,0 +1,6 @@
+bin/clamdscan-progress usr/bin/
+bin/clamdscan-watch usr/bin/
+lib/clamdscan-tools.sh usr/lib/clamdscan-tools/
+config/clamdscan-tools.conf etc/clamdscan-tools/
+config/excludes.conf etc/clamdscan-tools/
+config/prune-paths.conf etc/clamdscan-tools/

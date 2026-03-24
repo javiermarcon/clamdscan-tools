@@ -1,0 +1,41 @@
+# Debian packaging
+*.deb
+*.build
+*.buildinfo
+*.changes
+*.dsc
+*.tar.*
+debian/files
+debian/*.log
+debian/tmp/
+debian/*.substvars
+
+# Build artifacts
+build/
+dist/
+
+# Logs
+*.log
+
+# State files
+*.state
+*.files
+*.find.err
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python cache (used in helper scripts)
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Shellcheck temp
+*.tmp
+

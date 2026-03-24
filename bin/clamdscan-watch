@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+INSTALLED_LIB="/usr/lib/clamdscan-tools/clamdscan-tools.sh"
+LOCAL_LIB="${SCRIPT_DIR}/../lib/clamdscan-tools.sh"
+
+if [ -f "$INSTALLED_LIB" ]; then
+  LIB_FILE="$INSTALLED_LIB"
+elif [ -f "$LOCAL_LIB" ]; then
+  LIB_FILE="$LOCAL_LIB"
+else
+  echo "ERROR: no se encontró la librería ni en instalación ni en el repo" >&2
+  exit 1
+fi
+
+# shellcheck source=lib/clamdscan-tools.sh
+if false; then
+  source "lib/clamdscan-tools.sh"
+fi
+
+# shellcheck disable=SC1090
+source "$LIB_FILE"
+
+cts_load_config
+
+WATCH_LOG=""
+FOLLOW=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --follow|-f)
+      FOLLOW=1
+      shift
+      ;;
+    --log)
+      if [ "$#" -lt 2 ]; then
+        echo "ERROR: --log requiere una ruta" >&2
+        exit 2
+      fi
+      WATCH_LOG="$2"
+      shift 2
+      ;;
+    --help|-h)
+      cat <<'EOF'
+Uso:
+  clamdscan-watch [opciones]
+
+Opciones:
+  --log FILE      Muestra ese log
+  --follow, -f    Hace tail -f
+  -h, --help      Muestra ayuda
+
+Si no se pasa --log, muestra el log más reciente.
+EOF
+      exit 0
+      ;;
+    *)
+      echo "ERROR: opción desconocida: $1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [ -z "$WATCH_LOG" ]; then
+  WATCH_LOG="$(find "$CTS_LOG_DIR" -maxdepth 1 -type f -name 'scan_*.log' | sort | tail -n 1)"
+fi
+
+if [ -z "$WATCH_LOG" ] || [ ! -f "$WATCH_LOG" ]; then
+  echo "No hay logs para mostrar." >&2
+  exit 1
+fi
+
+echo "Log: $WATCH_LOG"
+echo
+
+if [ "$FOLLOW" -eq 1 ]; then
+  tail -f "$WATCH_LOG"
+else
+  cat "$WATCH_LOG"
+fi

@@ -1,0 +1,16 @@
+Source: clamdscan-tools
+Section: utils
+Priority: optional
+Maintainer: Javier Marcon <javier@example.com>
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13)
+
+Package: clamdscan-tools
+Architecture: all
+Depends: bash, clamav-daemon, coreutils, findutils, grep, sed, mawk | gawk, procps, python3, util-linux
+Recommends: tracker3
+Description: Wrapper avanzado para clamdscan con progreso, resume y exclusiones configurables
+ Herramienta para ejecutar clamdscan con barra/progreso textual, archivos
+ state para reanudación, exclusiones configurables, logs centralizados e
+ integración opcional con Tracker.
+ 

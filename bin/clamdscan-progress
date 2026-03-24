@@ -1,0 +1,284 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+INSTALLED_LIB="/usr/lib/clamdscan-tools/clamdscan-tools.sh"
+LOCAL_LIB="${SCRIPT_DIR}/../lib/clamdscan-tools.sh"
+
+if [ -f "$INSTALLED_LIB" ]; then
+  LIB_FILE="$INSTALLED_LIB"
+elif [ -f "$LOCAL_LIB" ]; then
+  LIB_FILE="$LOCAL_LIB"
+else
+  echo "ERROR: no se encontró la librería ni en instalación ni en el repo" >&2
+  exit 1
+fi
+
+# shellcheck source=lib/clamdscan-tools.sh
+if false; then
+  source "lib/clamdscan-tools.sh"
+fi
+
+# shellcheck disable=SC1090
+source "$LIB_FILE"
+
+cts_load_config
+
+CTS_RESUME_STATE=""
+CTS_DRY_RUN=0
+CTS_NO_TRACKER=0
+CTS_USE_SYSTEM_TARGETS=0
+
+TARGETS=()
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --resume)
+      if [ "$#" -lt 2 ]; then
+        echo "ERROR: --resume requiere una ruta de state" >&2
+        exit 2
+      fi
+      CTS_RESUME_STATE="$2"
+      shift 2
+      ;;
+    --dry-run)
+      CTS_DRY_RUN=1
+      shift
+      ;;
+    --no-tracker)
+      CTS_NO_TRACKER=1
+      shift
+      ;;
+    --system)
+      CTS_USE_SYSTEM_TARGETS=1
+      shift
+      ;;
+    --help|-h)
+      cat <<'EOF'
+Uso:
+  clamdscan-progress [opciones] [rutas...]
+
+Opciones:
+  --resume FILE     Reanuda desde un archivo state previo
+  --dry-run         No ejecuta clamdscan; solo muestra qué haría
+  --no-tracker      No pausa/reanuda tracker aunque exista
+  --system          Usa los targets de sistema definidos en config
+  --verbose         Más salida informativa
+  -h, --help        Muestra esta ayuda
+
+Ejemplos:
+  sudo clamdscan-progress
+  sudo clamdscan-progress --system
+  clamdscan-progress ~/Descargas
+  sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_2026-03-23_12-00-00.state
+EOF
+      exit 0
+      ;;
+    --)
+      shift
+      while [ "$#" -gt 0 ]; do
+        TARGETS+=( "$1" )
+        shift
+      done
+      ;;
+    -*)
+      echo "ERROR: opción desconocida: $1" >&2
+      exit 2
+      ;;
+    *)
+      TARGETS+=( "$1" )
+      shift
+      ;;
+  esac
+done
+
+if [ "$CTS_USE_SYSTEM_TARGETS" -eq 1 ]; then
+  cts_split_words_into_array TARGETS "$CTS_SYSTEM_TARGETS"
+fi
+
+if [ "${#TARGETS[@]}" -eq 0 ]; then
+  cts_split_words_into_array TARGETS "$CTS_DEFAULT_TARGETS"
+fi
+
+cts_ensure_runtime_dirs
+
+CTS_TS="$(date +%F_%H-%M-%S)"
+CTS_LOG="${CTS_LOG_DIR}/scan_${CTS_TS}.log"
+CTS_STATE="${CTS_STATE_DIR}/scan_${CTS_TS}.state"
+CTS_FILES="${CTS_STATE_DIR}/scan_${CTS_TS}.files"
+CTS_FIND_ERR="${CTS_STATE_DIR}/scan_${CTS_TS}.find.err"
+CTS_DONE_TMP=""
+
+if [ -n "$CTS_RESUME_STATE" ]; then
+  if [ ! -f "$CTS_RESUME_STATE" ]; then
+    echo "ERROR: no existe el state indicado en --resume: $CTS_RESUME_STATE" >&2
+    exit 2
+  fi
+  CTS_STATE="$CTS_RESUME_STATE"
+fi
+
+cts_log_info "Targets: ${TARGETS[*]}"
+cts_log_info "Modo root: $(cts_is_root && echo yes || echo no)"
+cts_log_info "Log: $CTS_LOG"
+cts_log_info "State: $CTS_STATE"
+cts_log_info "Files: $CTS_FILES"
+cts_log_info "Find errors: $CTS_FIND_ERR"
+
+cts_start_clamav_daemon_if_possible
+
+if [ "$CTS_NO_TRACKER" -eq 0 ]; then
+  cts_tracker_pause_if_available
+fi
+
+cts_cleanup() {
+  local exit_code="$1"
+
+  if [ -n "${CTS_DONE_TMP:-}" ] && [ -f "${CTS_DONE_TMP:-}" ]; then
+    rm -f "$CTS_DONE_TMP"
+  fi
+
+  if [ "${CTS_TRACKER_PAUSED:-0}" -eq 1 ]; then
+    cts_tracker_resume_if_needed
+  fi
+
+  exit "$exit_code"
+}
+
+trap 'cts_cleanup 130' INT TERM
+
+cts_build_find_command_args
+
+cts_log_info "Generando lista de archivos..."
+if ! find "${TARGETS[@]}" "${CTS_FIND_ARGS[@]}" > "$CTS_FILES" 2> "$CTS_FIND_ERR"; then
+  cts_log_warn "find devolvió error; se intentará continuar si la lista existe"
+  if [ ! -s "$CTS_FILES" ]; then
+    cts_log_error "find no pudo generar lista de archivos"
+    cts_cleanup 1
+  fi
+fi
+
+CTS_TOTAL="$(tr -cd '\000' < "$CTS_FILES" | wc -c | tr -d ' ')"
+
+CTS_DONE_TMP="$(mktemp)"
+if [ -f "$CTS_STATE" ]; then
+  awk '/^\//{print}' "$CTS_STATE" | sort -u > "$CTS_DONE_TMP"
+else
+  : > "$CTS_DONE_TMP"
+fi
+
+CTS_PENDING_TOTAL="$CTS_TOTAL"
+if [ -s "$CTS_DONE_TMP" ]; then
+  CTS_PENDING_TOTAL="$(
+    python3 - <<'PY' "$CTS_DONE_TMP" "$CTS_FILES"
+import sys
+done=set()
+with open(sys.argv[1], "r", encoding="utf-8", errors="ignore") as f:
+    for line in f:
+        line=line.rstrip("\n")
+        if line.startswith("/"):
+            done.add(line)
+data=open(sys.argv[2], "rb").read().split(b"\x00")
+cnt=0
+for b in data:
+    if not b:
+        continue
+    p=b.decode("utf-8", errors="surrogateescape")
+    if p in done:
+        continue
+    cnt += 1
+print(cnt)
+PY
+  )"
+fi
+
+{
+  echo "=== clamdscan-tools run ==="
+  echo "Start: $(date -Is)"
+  echo "Targets: ${TARGETS[*]}"
+  echo "Root: $(cts_is_root && echo yes || echo no)"
+  echo "Log: $CTS_LOG"
+  echo "State: $CTS_STATE"
+  echo "Files: $CTS_FILES"
+  echo "Find errors: $CTS_FIND_ERR"
+  echo "Total: $CTS_TOTAL"
+  echo "Pending: $CTS_PENDING_TOTAL"
+  echo "Tracker paused: ${CTS_TRACKER_PAUSED:-0}"
+  echo "==========================="
+} >> "$CTS_LOG"
+
+cts_log_info "Total detectados: $CTS_TOTAL"
+cts_log_info "Pendientes: $CTS_PENDING_TOTAL"
+
+python3 - <<'PY' "$CTS_DONE_TMP" "$CTS_FILES" | \
+while IFS= read -r -d '' file; do
+import sys
+
+done = set()
+with open(sys.argv[1], "r", encoding="utf-8", errors="surrogateescape") as f:
+    for line in f:
+        line = line.rstrip("\n")
+        if line:
+            done.add(line.encode("utf-8", errors="surrogateescape"))
+
+with open(sys.argv[2], "rb") as f:
+    data = f.read().split(b"\x00")
+
+out = sys.stdout.buffer
+for b in data:
+    if not b:
+        continue
+    if b in done:
+        continue
+    out.write(b + b"\x00")
+PY
+  CTS_SCANNED="${CTS_SCANNED:-0}"
+  CTS_FOUND="${CTS_FOUND:-0}"
+  CTS_ERRORS="${CTS_ERRORS:-0}"
+
+  CTS_SCANNED=$((CTS_SCANNED + 1))
+
+  if [ "$CTS_PENDING_TOTAL" -gt 0 ]; then
+    CTS_PCT="$(python3 -c "print(f'{(${CTS_SCANNED}/${CTS_PENDING_TOTAL})*100:.2f}')")"
+    printf "\rEscaneados: %d / %d (%s%%)  FOUND: %d  ERROR: %d" \
+      "$CTS_SCANNED" "$CTS_PENDING_TOTAL" "$CTS_PCT" "$CTS_FOUND" "$CTS_ERRORS"
+  else
+    printf "\rEscaneados: %d  FOUND: %d  ERROR: %d" \
+      "$CTS_SCANNED" "$CTS_FOUND" "$CTS_ERRORS"
+  fi
+
+  if [ "$CTS_DRY_RUN" -eq 1 ]; then
+    printf '%s: DRY-RUN\n' "$file" >> "$CTS_LOG"
+    printf '%s\n' "$file" >> "$CTS_STATE"
+    continue
+  fi
+
+  if cts_is_root; then
+    CTS_OUT="$(cts_run_clamdscan_file_root "$file" 2>&1 || true)"
+  else
+    CTS_OUT="$(cts_run_clamdscan_file_user "$file" 2>&1 || true)"
+  fi
+
+  CTS_STATUS="$(printf '%s\n' "$CTS_OUT" | awk -F': ' 'NR==1 && ($2=="OK" || $2=="FOUND") {print $2}')"
+
+  if [ "$CTS_STATUS" = "FOUND" ]; then
+    CTS_FOUND=$((CTS_FOUND + 1))
+    printf '%s: FOUND\n' "$file" >> "$CTS_LOG"
+  elif [ "$CTS_STATUS" = "OK" ]; then
+    printf '%s: OK\n' "$file" >> "$CTS_LOG"
+  else
+    CTS_ERRORS=$((CTS_ERRORS + 1))
+    printf '%s: ERROR\n' "$file" >> "$CTS_LOG"
+    printf '  msg: %s\n' "$(printf '%s' "$CTS_OUT" | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g')" >> "$CTS_LOG"
+  fi
+
+  printf '%s\n' "$file" >> "$CTS_STATE"
+done
+
+echo
+cts_log_info "Finalizado"
+cts_log_info "Log: $CTS_LOG"
+cts_log_info "State: $CTS_STATE"
+cts_log_info "Files: $CTS_FILES"
+cts_log_info "Find errors: $CTS_FIND_ERR"
+
+cts_cleanup 0
