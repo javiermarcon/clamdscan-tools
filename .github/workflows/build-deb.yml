@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install build deps
         run: |
@@ -22,19 +22,30 @@ jobs:
 
       - name: Shellcheck
         run: |
-          shellcheck bin/clamdscan-progress
-          shellcheck bin/clamdscan-watch
-          shellcheck lib/clamdscan-tools.sh
-          shellcheck debian/postinst
-          shellcheck debian/prerm
-          shellcheck debian/postrm
+          shellcheck -x bin/clamdscan-progress
+          shellcheck -x bin/clamdscan-watch
+          shellcheck -x lib/clamdscan-tools.sh
+          shellcheck -x debian/postinst
+          shellcheck -x debian/prerm
+          shellcheck -x debian/postrm
 
       - name: Build deb
         run: |
           make package
 
+      - name: Collect artifacts
+        run: |
+          mkdir -p dist
+          cp ../*.deb dist/
+
       - name: Upload deb artifact
-        uses: actions/upload-artifact@v4
+        if: ${{ !env.ACT }}
+        uses: actions/upload-artifact@v6
         with:
           name: clamdscan-tools-deb
-          path: ../*.deb
+          path: dist/*.deb
+
+      - name: List collected artifacts
+        if: ${{ env.ACT }}
+        run: |
+          ls -l dist
