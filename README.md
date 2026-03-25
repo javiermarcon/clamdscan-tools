@@ -1,7 +1,7 @@
 # clamdscan-tools
 
-![Build](https://img.shields.io/github/actions/workflow/status/TU_USUARIO/clamdscan-tools/build-deb.yml)
-![License](https://img.shields.io/github/license/TU_USUARIO/clamdscan-tools)
+![Build](https://img.shields.io/github/actions/workflow/status/javiermarcon/clamdscan-tools/build-deb.yml)
+![License](https://img.shields.io/github/license/javiermarcon/clamdscan-tools)
 ![Platform](https://img.shields.io/badge/platform-linux-blue)
 ![Package](https://img.shields.io/badge/package-deb-green)
 
@@ -67,18 +67,22 @@ sudo apt purge clamdscan-tools
 ## Installed Paths
 
 ### Binaries
+
 - /usr/bin/clamdscan-progress
 - /usr/bin/clamdscan-watch
 
 ### Library
+
 - /usr/lib/clamdscan-tools/clamdscan-tools.sh
 
 ### Configuration
+
 - /etc/clamdscan-tools/clamdscan-tools.conf
 - /etc/clamdscan-tools/excludes.conf
 - /etc/clamdscan-tools/prune-paths.conf
 
 ### Runtime
+
 - /var/log/clamdscan-tools/
 - /var/lib/clamdscan-tools/state/
 - /var/lib/clamdscan-tools/infected/
