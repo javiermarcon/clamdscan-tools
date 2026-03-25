@@ -39,3 +39,19 @@ Thumbs.db
 # Shellcheck temp
 *.tmp
 
+# Debian build artifacts
+debian/clamdscan-tools/
+debian/tmp/
+debian/files
+debian/*.substvars
+debian/*.debhelper
+debian/*-stamp
+debian/*.log
+
+# Build outputs
+*.deb
+*.build
+*.buildinfo
+*.changes
+*.dsc
+*.tar.*
