@@ -1,16 +1,25 @@
 PACKAGE=clamdscan-tools
 
-.PHONY: build clean lint
+.PHONY: build package clean lint
 
 build:
-	debuild -us -uc
+	@echo "No build step required for this project."
+
+package:
+	dpkg-buildpackage -us -uc -b
 
 clean:
-	debclean || true
 	rm -f ../$(PACKAGE)_*.build \
 	      ../$(PACKAGE)_*.buildinfo \
 	      ../$(PACKAGE)_*.changes \
-	      ../$(PACKAGE)_*.deb
+	      ../$(PACKAGE)_*.deb \
+	      ../$(PACKAGE)_*.dsc \
+	      ../$(PACKAGE)_*.tar.xz \
+	      debian/debhelper-build-stamp \
+	      debian/files \
+	      debian/$(PACKAGE).substvars
+	rm -rf debian/.debhelper \
+	       debian/$(PACKAGE)
 
 lint:
 	shellcheck -x bin/clamdscan-progress

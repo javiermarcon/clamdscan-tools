@@ -47,7 +47,7 @@ This tool solves those limitations while remaining lightweight and portable.
 ### Install from .deb
 
 ```bash
-sudo apt install ./clamdscan-tools_0.1.0-1_all.deb
+sudo apt install ./clamdscan-tools_0.1.0_all.deb
 ```
 
 ### Remove
@@ -217,7 +217,13 @@ Each run produces:
 
 ```bash
 sudo apt install devscripts debhelper build-essential
-make build
+make package
+```
+
+Direct alternative:
+
+```bash
+dpkg-buildpackage -us -uc -b
 ```
 
 ---
