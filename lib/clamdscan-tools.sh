@@ -24,6 +24,54 @@ cts_is_root() {
   [ "$(id -u)" -eq 0 ]
 }
 
+cts_effective_state_home() {
+  if [ -n "${XDG_STATE_HOME:-}" ]; then
+    printf '%s\n' "$XDG_STATE_HOME"
+  else
+    printf '%s\n' "$HOME/.local/state"
+  fi
+}
+
+cts_effective_data_home() {
+  if [ -n "${XDG_DATA_HOME:-}" ]; then
+    printf '%s\n' "$XDG_DATA_HOME"
+  else
+    printf '%s\n' "$HOME/.local/share"
+  fi
+}
+
+cts_path_is_writable_or_creatable() {
+  local target="$1"
+  local probe="$target"
+
+  while [ "$probe" != "/" ] && [ ! -e "$probe" ]; do
+    probe="$(dirname -- "$probe")"
+  done
+
+  [ -w "$probe" ]
+}
+
+cts_use_user_runtime_dirs_if_needed() {
+  local state_home data_home
+
+  if cts_is_root; then
+    return 0
+  fi
+
+  if cts_path_is_writable_or_creatable "$CTS_LOG_DIR" &&
+     cts_path_is_writable_or_creatable "$CTS_STATE_DIR" &&
+     cts_path_is_writable_or_creatable "$CTS_INFECTED_DIR"; then
+    return 0
+  fi
+
+  state_home="$(cts_effective_state_home)"
+  data_home="$(cts_effective_data_home)"
+
+  CTS_LOG_DIR="${state_home}/clamdscan-tools/log"
+  CTS_STATE_DIR="${state_home}/clamdscan-tools/state"
+  CTS_INFECTED_DIR="${data_home}/clamdscan-tools/infected"
+}
+
 cts_load_config() {
   local script_dir local_config local_excludes local_prune_paths
 
@@ -52,6 +100,8 @@ cts_load_config() {
   : "${CTS_USE_IONICE:=yes}"
   : "${CTS_CLAMD_SERVICE:=clamav-daemon}"
   : "${CTS_USE_TRACKER:=yes}"
+
+  cts_use_user_runtime_dirs_if_needed
 }
 
 cts_split_words_into_array() {

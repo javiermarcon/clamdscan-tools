@@ -116,6 +116,12 @@ clamdscan-progress ~/Descargas
 sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_TIMESTAMP.state
 @end example
 
+When running without root privileges, runtime files are stored in the configured
+system directories only if the current user can write there. Otherwise
+@command{clamdscan-progress} falls back to per-user XDG paths under
+@file{~/.local/state/clamdscan-tools/} and
+@file{~/.local/share/clamdscan-tools/}.
+
 @node clamdscan-watch
 @section clamdscan-watch
 
@@ -154,6 +160,10 @@ The package installs the following configuration files:
 @table @file
 @item /etc/clamdscan-tools/clamdscan-tools.conf
 Main configuration file with default targets, runtime directories and optional integrations.
+When the configured runtime directories are not writable for a non-root user,
+the tool automatically falls back to
+@file{$XDG_STATE_HOME/clamdscan-tools/} (or @file{~/.local/state/clamdscan-tools/})
+and @file{$XDG_DATA_HOME/clamdscan-tools/} (or @file{~/.local/share/clamdscan-tools/}).
 
 @item /etc/clamdscan-tools/excludes.conf
 Directory-name exclusions such as @code{.git}, @code{node_modules} or cache folders.
@@ -165,7 +175,8 @@ Absolute paths to skip entirely, for example @file{/proc} or @file{/sys}.
 @node Runtime Files
 @chapter Runtime Files
 
-During execution, clamdscan-tools stores data in standard locations:
+During execution, clamdscan-tools stores data in standard locations. As root,
+these are the default system paths:
 
 @table @file
 @item /var/log/clamdscan-tools/
@@ -176,6 +187,20 @@ State files used for resume, generated file lists and auxiliary logs.
 
 @item /var/lib/clamdscan-tools/infected/
 Destination directory for quarantined files when the scan runs with sufficient privileges.
+@end table
+
+For unprivileged runs where those system paths are not writable, runtime files
+are stored in:
+
+@table @file
+@item ~/.local/state/clamdscan-tools/log/
+Per-user scan logs.
+
+@item ~/.local/state/clamdscan-tools/state/
+Per-user state files, file lists and @command{find} error logs.
+
+@item ~/.local/share/clamdscan-tools/infected/
+Per-user quarantine directory.
 @end table
 
 For command-specific usage, see @command{info clamdscan-tools}, @command{man clamdscan-progress}

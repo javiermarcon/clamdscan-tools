@@ -109,6 +109,11 @@ Synopsis:
      clamdscan-progress ~/Descargas
      sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_TIMESTAMP.state
 
+   When running without root privileges, runtime files are stored in the
+configured system directories only if the current user can write there.
+Otherwise ‘clamdscan-progress’ falls back to per-user XDG paths under
+‘~/.local/state/clamdscan-tools/’ and ‘~/.local/share/clamdscan-tools/’.
+
 
 File: clamdscan-tools.info,  Node: clamdscan-watch,  Prev: clamdscan-progress,  Up: Commands
 
@@ -146,7 +151,12 @@ The package installs the following configuration files:
 
 ‘/etc/clamdscan-tools/clamdscan-tools.conf’
      Main configuration file with default targets, runtime directories
-     and optional integrations.
+     and optional integrations.  When the configured runtime directories
+     are not writable for a non-root user, the tool automatically falls
+     back to ‘$XDG_STATE_HOME/clamdscan-tools/’ (or
+     ‘~/.local/state/clamdscan-tools/’) and
+     ‘$XDG_DATA_HOME/clamdscan-tools/’ (or
+     ‘~/.local/share/clamdscan-tools/’).
 
 ‘/etc/clamdscan-tools/excludes.conf’
      Directory-name exclusions such as ‘.git’, ‘node_modules’ or cache
@@ -161,7 +171,8 @@ File: clamdscan-tools.info,  Node: Runtime Files,  Prev: Configuration,  Up: Top
 5 Runtime Files
 ***************
 
-During execution, clamdscan-tools stores data in standard locations:
+During execution, clamdscan-tools stores data in standard locations.  As
+root, these are the default system paths:
 
 ‘/var/log/clamdscan-tools/’
      Scan logs shown by ‘clamdscan-watch’.
@@ -174,6 +185,18 @@ During execution, clamdscan-tools stores data in standard locations:
      Destination directory for quarantined files when the scan runs with
      sufficient privileges.
 
+   For unprivileged runs where those system paths are not writable,
+runtime files are stored in:
+
+‘~/.local/state/clamdscan-tools/log/’
+     Per-user scan logs.
+
+‘~/.local/state/clamdscan-tools/state/’
+     Per-user state files, file lists and ‘find’ error logs.
+
+‘~/.local/share/clamdscan-tools/infected/’
+     Per-user quarantine directory.
+
    For command-specific usage, see ‘info clamdscan-tools’, ‘man
 clamdscan-progress’ and ‘man clamdscan-watch’.
 
@@ -185,9 +208,9 @@ Node: Overview743
 Node: Installation1291
 Node: Commands1677
 Node: clamdscan-progress1853
-Node: clamdscan-watch2688
-Node: Configuration3242
-Node: Runtime Files3842
+Node: clamdscan-watch2989
+Node: Configuration3543
+Node: Runtime Files4452
 
 End Tag Table
 

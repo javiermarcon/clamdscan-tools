@@ -93,6 +93,9 @@ sudo apt purge clamdscan-tools
 - /var/log/clamdscan-tools/
 - /var/lib/clamdscan-tools/state/
 - /var/lib/clamdscan-tools/infected/
+- ~/.local/state/clamdscan-tools/log
+- ~/.local/state/clamdscan-tools/state
+- ~/.local/share/clamdscan-tools/infected
 
 ---
 
@@ -154,6 +157,7 @@ clamdscan-watch --follow
 - Scans only readable files
 - Does not move infected files
 - Does not require daemon start
+- Falls back to per-user runtime directories if `/var/log/clamdscan-tools` or `/var/lib/clamdscan-tools` are not writable
 
 ---
 
@@ -174,6 +178,14 @@ CTS_INFECTED_DIR="/var/lib/clamdscan-tools/infected"
 CTS_USE_NICE="yes"
 CTS_USE_IONICE="yes"
 CTS_USE_TRACKER="yes"
+```
+
+When running without `sudo`, the configured runtime directories are used only if the current user can write there. Otherwise the tool automatically falls back to:
+
+```bash
+CTS_LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/clamdscan-tools/log"
+CTS_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/clamdscan-tools/state"
+CTS_INFECTED_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clamdscan-tools/infected"
 ```
 
 ---
@@ -221,6 +233,9 @@ Each run produces:
 - State file (resume)
 - File list
 - Find errors log
+
+As root, these files are stored under `/var/log/clamdscan-tools` and `/var/lib/clamdscan-tools/state`.
+Without `sudo`, if those paths are not writable, they are stored under `~/.local/state/clamdscan-tools/`.
 
 ---
 

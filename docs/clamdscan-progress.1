@@ -16,6 +16,13 @@ If no path is given, the command uses the targets configured in
 When
 .B --system
 is used, the configured system targets are used instead.
+.PP
+When run without root privileges, runtime files use the configured system
+directories only if the current user can write there. Otherwise the command
+falls back to per-user XDG paths under
+.IR ~/.local/state/clamdscan-tools/
+and
+.IR ~/.local/share/clamdscan-tools/ .
 .SH OPTIONS
 .TP
 .BI --resume " FILE"
@@ -53,6 +60,12 @@ Scan logs.
 .TP
 .I /var/lib/clamdscan-tools/state/
 State files, file lists and auxiliary runtime data.
+.TP
+.I ~/.local/state/clamdscan-tools/
+Per-user logs, state files, file lists and find error logs when system paths are not writable.
+.TP
+.I ~/.local/share/clamdscan-tools/infected/
+Per-user quarantine directory used for unprivileged runs.
 .SH EXIT STATUS
 The command exits with status 0 on success, 1 on runtime failure and 2 on
 invalid command line usage.
