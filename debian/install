@@ -4,3 +4,4 @@ lib/clamdscan-tools.sh usr/lib/clamdscan-tools/
 config/clamdscan-tools.conf etc/clamdscan-tools/
 config/excludes.conf etc/clamdscan-tools/
 config/prune-paths.conf etc/clamdscan-tools/
+docs/clamdscan-tools.info usr/share/info/

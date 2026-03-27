@@ -14,6 +14,7 @@ Advanced wrapper for `clamdscan` providing:
 - Optional Tracker (GNOME) integration
 - Proper behavior with and without root privileges
 - Debian package support (.deb)
+- Manual pages and GNU info documentation
 
 ---
 
@@ -74,6 +75,12 @@ sudo apt purge clamdscan-tools
 ### Library
 
 - /usr/lib/clamdscan-tools/clamdscan-tools.sh
+
+### Documentation
+
+- /usr/share/man/man1/clamdscan-progress.1.gz
+- /usr/share/man/man1/clamdscan-watch.1.gz
+- /usr/share/info/clamdscan-tools.info.gz
 
 ### Configuration
 
@@ -220,7 +227,7 @@ Each run produces:
 ## Build (.deb)
 
 ```bash
-sudo apt install devscripts debhelper build-essential
+sudo apt install devscripts debhelper build-essential texinfo
 make package
 ```
 

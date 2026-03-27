@@ -1,0 +1,48 @@
+.TH CLAMDSCAN-WATCH 1 "March 2026" "clamdscan-tools 0.1.0" "User Commands"
+.SH NAME
+clamdscan-watch \- display or follow clamdscan-tools logs
+.SH SYNOPSIS
+.B clamdscan-watch
+[\fIOPTION\fR]...
+.SH DESCRIPTION
+.B clamdscan-watch
+shows the most recent log produced by
+.BR clamdscan-progress (1)
+or a specific log file chosen with
+.BR --log .
+It can also follow the file with
+.BR tail -f .
+.SH OPTIONS
+.TP
+.BI --log " FILE"
+Display the given log file instead of auto-detecting the latest one.
+.TP
+.BR --follow ", " -f
+Keep following the selected log file.
+.TP
+.BR -h ", " --help
+Show the built-in help text and exit.
+.SH FILES
+.TP
+.I /etc/clamdscan-tools/clamdscan-tools.conf
+Provides the log directory used for auto-detection.
+.TP
+.I /var/log/clamdscan-tools/
+Default location of generated scan logs.
+.SH EXIT STATUS
+The command exits with status 0 on success, 1 when no readable log is found and
+2 on invalid command line usage.
+.SH EXAMPLES
+.TP
+Show the latest log:
+.B clamdscan-watch
+.TP
+Follow the latest log:
+.B clamdscan-watch --follow
+.TP
+Open a specific log:
+.B clamdscan-watch --log /var/log/clamdscan-tools/scan_2026-03-23_12-00-00.log
+.SH SEE ALSO
+.BR clamdscan-progress (1),
+.BR tail (1),
+.BR info (1)

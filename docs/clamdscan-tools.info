@@ -1,0 +1,197 @@
+This is clamdscan-tools.info, produced by makeinfo version 7.1 from
+clamdscan-tools.texi.
+
+This manual documents clamdscan-tools, a Debian-oriented wrapper around
+clamdscan with progress reporting, resumable scans and configurable
+exclusions.
+INFO-DIR-SECTION Security
+START-INFO-DIR-ENTRY
+* clamdscan-tools: (clamdscan-tools). Wrappers for clamdscan with progress and resume.
+END-INFO-DIR-ENTRY
+
+
+File: clamdscan-tools.info,  Node: Top,  Next: Overview,  Up: (dir)
+
+clamdscan-tools
+***************
+
+This manual documents clamdscan-tools, a Debian-oriented wrapper around
+clamdscan with progress reporting, resumable scans and configurable
+exclusions.
+
+* Menu:
+
+* Overview::
+* Installation::
+* Commands::
+* Configuration::
+* Runtime Files::
+
+
+File: clamdscan-tools.info,  Node: Overview,  Next: Installation,  Prev: Top,  Up: Top
+
+1 Overview
+**********
+
+clamdscan-tools provides two command-line programs:
+
+   • ‘clamdscan-progress’ runs scans with a progress indicator,
+     resumable state files and configurable exclusions.
+   • ‘clamdscan-watch’ shows or follows the logs produced by completed
+     or active scans.
+
+   The package is intended for Debian systems and integrates with the
+standard filesystem layout for binaries, configuration, logs and Info
+documentation.
+
+
+File: clamdscan-tools.info,  Node: Installation,  Next: Commands,  Prev: Overview,  Up: Top
+
+2 Installation
+**************
+
+Install the binary package with:
+
+     sudo apt install ./clamdscan-tools_0.1.0_all.deb
+
+   Remove it with:
+
+     sudo apt remove clamdscan-tools
+
+   Purge the package, including configuration files managed by dpkg,
+with:
+
+     sudo apt purge clamdscan-tools
+
+
+File: clamdscan-tools.info,  Node: Commands,  Next: Configuration,  Prev: Installation,  Up: Top
+
+3 Commands
+**********
+
+* Menu:
+
+* clamdscan-progress::
+* clamdscan-watch::
+
+
+File: clamdscan-tools.info,  Node: clamdscan-progress,  Next: clamdscan-watch,  Up: Commands
+
+3.1 clamdscan-progress
+======================
+
+Synopsis:
+
+     clamdscan-progress [OPTION]... [PATH]...
+
+   Important options:
+
+‘--resume FILE’
+     Resume a previous run from an existing state file.
+
+‘--dry-run’
+     Build the scan list and record progress without calling
+     ‘clamdscan’.
+
+‘--no-tracker’
+     Disable Tracker pause/resume integration for the current run.
+
+‘--system’
+     Use the configured system target list instead of default targets.
+
+‘-h, --help’
+     Display built-in usage help.
+
+   Examples:
+
+     sudo clamdscan-progress
+     sudo clamdscan-progress --system
+     clamdscan-progress ~/Descargas
+     sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_TIMESTAMP.state
+
+
+File: clamdscan-tools.info,  Node: clamdscan-watch,  Prev: clamdscan-progress,  Up: Commands
+
+3.2 clamdscan-watch
+===================
+
+Synopsis:
+
+     clamdscan-watch [OPTION]...
+
+   Important options:
+
+‘--log FILE’
+     Display the selected log file.
+
+‘--follow, -f’
+     Follow the selected log file using semantics similar to ‘tail -f’.
+
+‘-h, --help’
+     Display built-in usage help.
+
+   Examples:
+
+     clamdscan-watch
+     clamdscan-watch --follow
+     clamdscan-watch --log /var/log/clamdscan-tools/scan_2026-03-23_12-00-00.log
+
+
+File: clamdscan-tools.info,  Node: Configuration,  Next: Runtime Files,  Prev: Commands,  Up: Top
+
+4 Configuration
+***************
+
+The package installs the following configuration files:
+
+‘/etc/clamdscan-tools/clamdscan-tools.conf’
+     Main configuration file with default targets, runtime directories
+     and optional integrations.
+
+‘/etc/clamdscan-tools/excludes.conf’
+     Directory-name exclusions such as ‘.git’, ‘node_modules’ or cache
+     folders.
+
+‘/etc/clamdscan-tools/prune-paths.conf’
+     Absolute paths to skip entirely, for example ‘/proc’ or ‘/sys’.
+
+
+File: clamdscan-tools.info,  Node: Runtime Files,  Prev: Configuration,  Up: Top
+
+5 Runtime Files
+***************
+
+During execution, clamdscan-tools stores data in standard locations:
+
+‘/var/log/clamdscan-tools/’
+     Scan logs shown by ‘clamdscan-watch’.
+
+‘/var/lib/clamdscan-tools/state/’
+     State files used for resume, generated file lists and auxiliary
+     logs.
+
+‘/var/lib/clamdscan-tools/infected/’
+     Destination directory for quarantined files when the scan runs with
+     sufficient privileges.
+
+   For command-specific usage, see ‘info clamdscan-tools’, ‘man
+clamdscan-progress’ and ‘man clamdscan-watch’.
+
+
+
+Tag Table:
+Node: Top397
+Node: Overview743
+Node: Installation1291
+Node: Commands1677
+Node: clamdscan-progress1853
+Node: clamdscan-watch2688
+Node: Configuration3242
+Node: Runtime Files3842
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

@@ -1,0 +1,184 @@
+\input texinfo
+@setfilename clamdscan-tools.info
+@settitle clamdscan-tools Manual
+@documentencoding UTF-8
+
+@dircategory Security
+@direntry
+* clamdscan-tools: (clamdscan-tools). Wrappers for clamdscan with progress and resume.
+@end direntry
+
+@copying
+This manual documents clamdscan-tools, a Debian-oriented wrapper around
+clamdscan with progress reporting, resumable scans and configurable exclusions.
+@end copying
+
+@titlepage
+@title clamdscan-tools Manual
+@subtitle Version 0.1.0
+@author Javier Marcon
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@node Top
+@top clamdscan-tools
+
+@insertcopying
+
+@menu
+* Overview::
+* Installation::
+* Commands::
+* Configuration::
+* Runtime Files::
+@end menu
+
+@node Overview
+@chapter Overview
+
+clamdscan-tools provides two command-line programs:
+
+@itemize @bullet
+@item @command{clamdscan-progress} runs scans with a progress indicator, resumable state files and configurable exclusions.
+@item @command{clamdscan-watch} shows or follows the logs produced by completed or active scans.
+@end itemize
+
+The package is intended for Debian systems and integrates with the standard
+filesystem layout for binaries, configuration, logs and Info documentation.
+
+@node Installation
+@chapter Installation
+
+Install the binary package with:
+
+@example
+sudo apt install ./clamdscan-tools_0.1.0_all.deb
+@end example
+
+Remove it with:
+
+@example
+sudo apt remove clamdscan-tools
+@end example
+
+Purge the package, including configuration files managed by dpkg, with:
+
+@example
+sudo apt purge clamdscan-tools
+@end example
+
+@node Commands
+@chapter Commands
+
+@menu
+* clamdscan-progress::
+* clamdscan-watch::
+@end menu
+
+@node clamdscan-progress
+@section clamdscan-progress
+
+Synopsis:
+
+@example
+clamdscan-progress [OPTION]... [PATH]...
+@end example
+
+Important options:
+
+@table @option
+@item --resume FILE
+Resume a previous run from an existing state file.
+
+@item --dry-run
+Build the scan list and record progress without calling @command{clamdscan}.
+
+@item --no-tracker
+Disable Tracker pause/resume integration for the current run.
+
+@item --system
+Use the configured system target list instead of default targets.
+
+@item -h, --help
+Display built-in usage help.
+@end table
+
+Examples:
+
+@example
+sudo clamdscan-progress
+sudo clamdscan-progress --system
+clamdscan-progress ~/Descargas
+sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_TIMESTAMP.state
+@end example
+
+@node clamdscan-watch
+@section clamdscan-watch
+
+Synopsis:
+
+@example
+clamdscan-watch [OPTION]...
+@end example
+
+Important options:
+
+@table @option
+@item --log FILE
+Display the selected log file.
+
+@item --follow, -f
+Follow the selected log file using semantics similar to @command{tail -f}.
+
+@item -h, --help
+Display built-in usage help.
+@end table
+
+Examples:
+
+@example
+clamdscan-watch
+clamdscan-watch --follow
+clamdscan-watch --log /var/log/clamdscan-tools/scan_2026-03-23_12-00-00.log
+@end example
+
+@node Configuration
+@chapter Configuration
+
+The package installs the following configuration files:
+
+@table @file
+@item /etc/clamdscan-tools/clamdscan-tools.conf
+Main configuration file with default targets, runtime directories and optional integrations.
+
+@item /etc/clamdscan-tools/excludes.conf
+Directory-name exclusions such as @code{.git}, @code{node_modules} or cache folders.
+
+@item /etc/clamdscan-tools/prune-paths.conf
+Absolute paths to skip entirely, for example @file{/proc} or @file{/sys}.
+@end table
+
+@node Runtime Files
+@chapter Runtime Files
+
+During execution, clamdscan-tools stores data in standard locations:
+
+@table @file
+@item /var/log/clamdscan-tools/
+Scan logs shown by @command{clamdscan-watch}.
+
+@item /var/lib/clamdscan-tools/state/
+State files used for resume, generated file lists and auxiliary logs.
+
+@item /var/lib/clamdscan-tools/infected/
+Destination directory for quarantined files when the scan runs with sufficient privileges.
+@end table
+
+For command-specific usage, see @command{info clamdscan-tools}, @command{man clamdscan-progress}
+and @command{man clamdscan-watch}.
+
+@bye

@@ -1,0 +1,75 @@
+.TH CLAMDSCAN-PROGRESS 1 "March 2026" "clamdscan-tools 0.1.0" "User Commands"
+.SH NAME
+clamdscan-progress \- execute clamdscan with progress display, resume support and exclusions
+.SH SYNOPSIS
+.B clamdscan-progress
+[\fIOPTION\fR]... [\fIPATH\fR]...
+.SH DESCRIPTION
+.B clamdscan-progress
+is a wrapper around
+.BR clamdscan (1)
+that builds a file list, scans items one by one, keeps a resumable state file
+and reports textual progress on standard output.
+.PP
+If no path is given, the command uses the targets configured in
+.IR /etc/clamdscan-tools/clamdscan-tools.conf .
+When
+.B --system
+is used, the configured system targets are used instead.
+.SH OPTIONS
+.TP
+.BI --resume " FILE"
+Resume a previous scan from the given state file.
+.TP
+.B --dry-run
+Do not execute
+.BR clamdscan ;
+only show and record what would be scanned.
+.TP
+.B --no-tracker
+Do not pause or resume Tracker, even if it is available.
+.TP
+.B --system
+Use the system target list from the configuration file.
+.TP
+.B --verbose
+Enable more verbose messages.
+.TP
+.BR -h ", " --help
+Show the built-in help text and exit.
+.SH FILES
+.TP
+.I /etc/clamdscan-tools/clamdscan-tools.conf
+Main configuration file.
+.TP
+.I /etc/clamdscan-tools/excludes.conf
+Directory name exclusions.
+.TP
+.I /etc/clamdscan-tools/prune-paths.conf
+Absolute paths excluded from the scan tree.
+.TP
+.I /var/log/clamdscan-tools/
+Scan logs.
+.TP
+.I /var/lib/clamdscan-tools/state/
+State files, file lists and auxiliary runtime data.
+.SH EXIT STATUS
+The command exits with status 0 on success, 1 on runtime failure and 2 on
+invalid command line usage.
+.SH EXAMPLES
+.TP
+Scan default targets as root:
+.B sudo clamdscan-progress
+.TP
+Scan the configured system targets:
+.B sudo clamdscan-progress --system
+.TP
+Scan a user directory:
+.B clamdscan-progress ~/Descargas
+.TP
+Resume a previous run:
+.B sudo clamdscan-progress --resume /var/lib/clamdscan-tools/state/scan_TIMESTAMP.state
+.SH SEE ALSO
+.BR clamdscan-watch (1),
+.BR clamdscan (1),
+.BR info (1)

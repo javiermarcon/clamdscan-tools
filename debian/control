@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Javier Marcon <javier@example.com>
 Standards-Version: 4.6.2
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 13), texinfo
 
 Package: clamdscan-tools
 Architecture: all
@@ -13,4 +13,3 @@ Description: Wrapper avanzado para clamdscan con progreso, resume y exclusiones 
  Herramienta para ejecutar clamdscan con barra/progreso textual, archivos
  state para reanudación, exclusiones configurables, logs centralizados e
  integración opcional con Tracker.
- 

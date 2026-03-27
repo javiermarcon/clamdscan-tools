@@ -1,4 +1,10 @@
 #!/usr/bin/make -f
 %:
 	dh $@
-    
+
+override_dh_auto_build:
+	makeinfo --no-split --output=docs/clamdscan-tools.info docs/clamdscan-tools.texi
+
+override_dh_auto_clean:
+	rm -f docs/clamdscan-tools.info
+	dh_auto_clean
