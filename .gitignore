@@ -55,3 +55,9 @@ debian/*.log
 *.changes
 *.dsc
 *.tar.*
+
+# Environments
+.venv
+venv/
+ENV/
+
