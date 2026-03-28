@@ -195,9 +195,15 @@ maintained automatically:
 @itemize
 @item Logs in @file{/var/log/clamdscan-tools/*.log} are rotated weekly with
 @command{logrotate}, keeping 8 compressed archives.
+@item Logs in @file{/home/*/.local/state/clamdscan-tools/log/*.log} are also
+rotated weekly with @command{logrotate}, keeping 8 compressed archives.
 @item Files under @file{/var/lib/clamdscan-tools/state/} are cleaned by
 @command{systemd-tmpfiles}; entries older than 30 days are removed.
 @end itemize
+
+Automatic cleanup of per-user state files under
+@file{~/.local/state/clamdscan-tools/state/} is not installed by the system
+package.
 
 For unprivileged runs where those system paths are not writable, runtime files
 are stored in:

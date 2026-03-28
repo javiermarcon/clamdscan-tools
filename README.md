@@ -240,7 +240,10 @@ Without `sudo`, if those paths are not writable, they are stored under `~/.local
 When installed from the `.deb`, system-managed runtime files are maintained automatically:
 
 - `/var/log/clamdscan-tools/*.log` is rotated by `logrotate` weekly, keeping 8 compressed archives
+- `/home/*/.local/state/clamdscan-tools/log/*.log` is also rotated by `logrotate` weekly, keeping 8 compressed archives
 - `/var/lib/clamdscan-tools/state/` is cleaned by `systemd-tmpfiles`, removing files older than 30 days
+
+Automatic cleanup of `~/.local/state/clamdscan-tools/state/` is not installed, because per-user state files are not managed by `systemd-tmpfiles` at the system package level.
 
 ---
 
