@@ -13,6 +13,7 @@ debian/*.substvars
 # Build artifacts
 build/
 dist/
+site/
 
 # Logs
 *.log
@@ -60,4 +61,3 @@ debian/*.log
 .venv
 venv/
 ENV/
-

@@ -1,0 +1,56 @@
+site_name: clamdscan-tools
+site_description: Advanced wrapper for clamdscan with progress, resume support, Debian packaging and APT distribution
+site_url: https://javiermarcon.github.io/clamdscan-tools/
+repo_url: https://github.com/javiermarcon/clamdscan-tools
+repo_name: javiermarcon/clamdscan-tools
+edit_uri: edit/main/docs-site/
+docs_dir: docs-site
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: lime
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: lime
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+
+nav:
+  - Overview: index.md
+  - Installation: install.md
+  - Usage: usage.md
+  - Configuration: configuration.md
+  - APT Repository: apt-repo.md
+  - Launchpad PPA: launchpad-ppa.md
+  - Development: development.md
+  - Troubleshooting: troubleshooting.md
+  - Security: security.md
+  - FAQ: faq.md

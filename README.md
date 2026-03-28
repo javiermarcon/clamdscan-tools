@@ -14,6 +14,8 @@ Advanced wrapper for `clamdscan` providing:
 - Optional Tracker (GNOME) integration
 - Proper behavior with and without root privileges
 - Debian package support (.deb)
+- Static signed APT repository support
+- MkDocs documentation site for GitHub Pages
 - Manual pages and GNU info documentation
 
 ---
@@ -50,6 +52,34 @@ This tool solves those limitations while remaining lightweight and portable.
 ```bash
 sudo apt install ./clamdscan-tools_0.2.0_all.deb
 ```
+
+### Install from the project APT repository
+
+Import the signing key:
+
+```bash
+curl -fsSL https://javiermarcon.github.io/clamdscan-tools/keys/clamdscan-tools-archive-key.asc \
+  | sudo gpg --dearmor -o /usr/share/keyrings/clamdscan-tools-archive-keyring.gpg
+```
+
+Add the repository:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/clamdscan-tools-archive-keyring.gpg] https://javiermarcon.github.io/clamdscan-tools/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/clamdscan-tools.list >/dev/null
+```
+
+Install:
+
+```bash
+sudo apt update
+sudo apt install clamdscan-tools
+```
+
+### Future Launchpad PPA
+
+Launchpad PPA publication is planned for Ubuntu users, but not enabled yet.
+Until then, use either the GitHub Release `.deb` or the project APT repository.
 
 ### Remove
 
@@ -292,6 +322,10 @@ Direct alternative:
 dpkg-buildpackage -us -uc -b
 ```
 
+`make package` remains the single source of truth to generate the `.deb`.
+It uses Debian packaging normally, then copies the resulting artifacts into
+`dist/` inside the repo for release and APT publishing workflows.
+
 ---
 
 ## Development
@@ -301,6 +335,52 @@ dpkg-buildpackage -us -uc -b
 ```bash
 make lint
 ```
+
+### Build web docs locally
+
+```bash
+python -m pip install mkdocs-material
+mkdocs serve
+```
+
+### Build signed static APT repo locally
+
+Assumptions:
+
+- `aptly` is installed
+- `gnupg` is installed
+- your private signing key is already imported locally
+
+```bash
+make package
+bash packaging/apt/init-repo.sh
+bash packaging/apt/add-packages.sh dist
+APTLY_GPG_KEY_ID="22B4D63898D3A00D" \
+APTLY_GPG_PASSPHRASE="YOUR_PASSPHRASE" \
+bash packaging/apt/publish-repo.sh
+mkdocs build --strict
+bash packaging/apt/export-site.sh
+```
+
+This generates:
+
+- `site/` for GitHub Pages
+- `site/apt/` for the static APT repository
+- `site/keys/clamdscan-tools-archive-key.asc` for client key import
+
+### GitHub Actions secrets for APT publishing
+
+The Pages/APT workflow requires these repository secrets:
+
+- `APTLY_GPG_PRIVATE_KEY`
+- `APTLY_GPG_KEY_ID`
+- `APTLY_GPG_PASSPHRASE`
+
+Expected values:
+
+- `APTLY_GPG_PRIVATE_KEY`: ASCII-armored private key
+- `APTLY_GPG_KEY_ID`: `22B4D63898D3A00D`
+- `APTLY_GPG_PASSPHRASE`: passphrase for the private key
 
 ---
 
