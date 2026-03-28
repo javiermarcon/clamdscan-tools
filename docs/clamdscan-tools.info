@@ -159,8 +159,9 @@ The package installs the following configuration files:
      ‘~/.local/share/clamdscan-tools/’).
 
 ‘/etc/clamdscan-tools/excludes.conf’
-     Directory-name exclusions such as ‘.git’, ‘node_modules’ or cache
-     folders.
+     Directory-name exclusions such as ‘.git’, ‘.cache’, ‘gvfs-metadata’
+     or ‘node_modules’.  Built-in defaults also skip transient lock
+     files matching ‘*.lock’.
 
 ‘/etc/clamdscan-tools/prune-paths.conf’
      Absolute paths to skip entirely, for example ‘/proc’ or ‘/sys’.
@@ -224,7 +225,7 @@ Node: Commands1677
 Node: clamdscan-progress1853
 Node: clamdscan-watch2989
 Node: Configuration3543
-Node: Runtime Files4452
+Node: Runtime Files4550
 
 End Tag Table
 

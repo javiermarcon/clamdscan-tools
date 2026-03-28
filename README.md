@@ -196,10 +196,14 @@ CTS_INFECTED_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clamdscan-tools/infected"
 
 ```text
 .git
+.cache
+gvfs-metadata
 node_modules
 venv
 __pycache__
 ```
+
+Built-in defaults also skip transient lock files matching `*.lock`.
 
 ---
 

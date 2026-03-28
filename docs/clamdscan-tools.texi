@@ -166,7 +166,9 @@ the tool automatically falls back to
 and @file{$XDG_DATA_HOME/clamdscan-tools/} (or @file{~/.local/share/clamdscan-tools/}).
 
 @item /etc/clamdscan-tools/excludes.conf
-Directory-name exclusions such as @code{.git}, @code{node_modules} or cache folders.
+Directory-name exclusions such as @code{.git}, @code{.cache},
+@code{gvfs-metadata} or @code{node_modules}. Built-in defaults also skip
+transient lock files matching @code{*.lock}.
 
 @item /etc/clamdscan-tools/prune-paths.conf
 Absolute paths to skip entirely, for example @file{/proc} or @file{/sys}.

@@ -229,6 +229,7 @@ cts_build_find_command_args() {
 
   prune_dir_names+=(
     ".git"
+    ".cache"
     "node_modules"
     ".venv"
     "venv"
@@ -243,9 +244,11 @@ cts_build_find_command_args() {
     ".ruff_cache"
     ".tox"
     "__pycache__"
+    "gvfs-metadata"
   )
 
   exclude_file_patterns+=(
+    "*.lock"
     "*.iso"
     "*.img"
     "*.qcow2"
