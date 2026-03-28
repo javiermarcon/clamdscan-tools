@@ -1,3 +1,12 @@
+clamdscan-tools (0.2.0) unstable; urgency=medium
+
+  * Add per-user runtime fallback when system paths are not writable.
+  * Add log rotation and state retention policies for packaged installs.
+  * Move scan exclusions and filters to /etc/clamdscan-tools files.
+  * Exclude transient cache, lock and gvfs metadata files from scans.
+
+ -- Javier Marcon <javiermarcon@gmail.com>  Sat, 28 Mar 2026 12:55:00 -0300
+
 clamdscan-tools (0.1.0) unstable; urgency=medium
 
   * Initial release.
