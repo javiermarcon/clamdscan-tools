@@ -189,6 +189,16 @@ State files used for resume, generated file lists and auxiliary logs.
 Destination directory for quarantined files when the scan runs with sufficient privileges.
 @end table
 
+When installed from the Debian package, system-managed runtime files are also
+maintained automatically:
+
+@itemize
+@item Logs in @file{/var/log/clamdscan-tools/*.log} are rotated weekly with
+@command{logrotate}, keeping 8 compressed archives.
+@item Files under @file{/var/lib/clamdscan-tools/state/} are cleaned by
+@command{systemd-tmpfiles}; entries older than 30 days are removed.
+@end itemize
+
 For unprivileged runs where those system paths are not writable, runtime files
 are stored in:
 

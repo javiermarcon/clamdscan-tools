@@ -237,6 +237,11 @@ Each run produces:
 As root, these files are stored under `/var/log/clamdscan-tools` and `/var/lib/clamdscan-tools/state`.
 Without `sudo`, if those paths are not writable, they are stored under `~/.local/state/clamdscan-tools/`.
 
+When installed from the `.deb`, system-managed runtime files are maintained automatically:
+
+- `/var/log/clamdscan-tools/*.log` is rotated by `logrotate` weekly, keeping 8 compressed archives
+- `/var/lib/clamdscan-tools/state/` is cleaned by `systemd-tmpfiles`, removing files older than 30 days
+
 ---
 
 ## Build (.deb)

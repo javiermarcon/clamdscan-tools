@@ -185,6 +185,14 @@ root, these are the default system paths:
      Destination directory for quarantined files when the scan runs with
      sufficient privileges.
 
+   When installed from the Debian package, system-managed runtime files
+are also maintained automatically:
+
+   • Logs in ‘/var/log/clamdscan-tools/*.log’ are rotated weekly with
+     ‘logrotate’, keeping 8 compressed archives.
+   • Files under ‘/var/lib/clamdscan-tools/state/’ are cleaned by
+     ‘systemd-tmpfiles’; entries older than 30 days are removed.
+
    For unprivileged runs where those system paths are not writable,
 runtime files are stored in:
 
