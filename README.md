@@ -87,6 +87,8 @@ sudo apt purge clamdscan-tools
 - /etc/clamdscan-tools/clamdscan-tools.conf
 - /etc/clamdscan-tools/excludes.conf
 - /etc/clamdscan-tools/prune-paths.conf
+- /etc/clamdscan-tools/exclude-file-patterns.conf
+- /etc/clamdscan-tools/exclude-files.conf
 
 ### Runtime
 
@@ -163,6 +165,10 @@ clamdscan-watch --follow
 
 ## Configuration
 
+All scan behavior is configured from files under `/etc/clamdscan-tools/`.
+The script only falls back to the repo-local `config/` defaults when those
+files do not exist.
+
 ### Main config
 
 `/etc/clamdscan-tools/clamdscan-tools.conf`
@@ -203,8 +209,6 @@ venv
 __pycache__
 ```
 
-Built-in defaults also skip transient lock files matching `*.lock`.
-
 ---
 
 ### Path exclusions
@@ -215,6 +219,30 @@ Built-in defaults also skip transient lock files matching `*.lock`.
 /proc
 /sys
 /dev
+$HOME/.cache
+$CTS_INFECTED_DIR
+```
+
+---
+
+### File-pattern exclusions
+
+`/etc/clamdscan-tools/exclude-file-patterns.conf`
+
+```text
+*.lock
+*.iso
+*.img
+```
+
+---
+
+### Exact-file exclusions
+
+`/etc/clamdscan-tools/exclude-files.conf`
+
+```text
+/swapfile
 ```
 
 ---

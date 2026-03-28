@@ -164,14 +164,21 @@ When the configured runtime directories are not writable for a non-root user,
 the tool automatically falls back to
 @file{$XDG_STATE_HOME/clamdscan-tools/} (or @file{~/.local/state/clamdscan-tools/})
 and @file{$XDG_DATA_HOME/clamdscan-tools/} (or @file{~/.local/share/clamdscan-tools/}).
+The script only uses repo-local fallback configuration when the files under
+@file{/etc/clamdscan-tools/} do not exist.
 
 @item /etc/clamdscan-tools/excludes.conf
 Directory-name exclusions such as @code{.git}, @code{.cache},
-@code{gvfs-metadata} or @code{node_modules}. Built-in defaults also skip
-transient lock files matching @code{*.lock}.
+@code{gvfs-metadata} or @code{node_modules}.
 
 @item /etc/clamdscan-tools/prune-paths.conf
 Absolute paths to skip entirely, for example @file{/proc} or @file{/sys}.
+
+@item /etc/clamdscan-tools/exclude-file-patterns.conf
+Filename patterns to skip, for example @code{*.lock} or disk image formats.
+
+@item /etc/clamdscan-tools/exclude-files.conf
+Exact file paths to exclude, for example @file{/swapfile}.
 @end table
 
 @node Runtime Files

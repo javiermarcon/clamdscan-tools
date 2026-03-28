@@ -3,6 +3,8 @@
 CTS_CONFIG_FILE="/etc/clamdscan-tools/clamdscan-tools.conf"
 CTS_EXCLUDES_FILE="/etc/clamdscan-tools/excludes.conf"
 CTS_PRUNE_PATHS_FILE="/etc/clamdscan-tools/prune-paths.conf"
+CTS_EXCLUDE_PATTERNS_FILE="/etc/clamdscan-tools/exclude-file-patterns.conf"
+CTS_EXCLUDE_FILES_FILE="/etc/clamdscan-tools/exclude-files.conf"
 
 # shellcheck disable=SC2034
 # shellcheck disable=SC2034
@@ -74,11 +76,14 @@ cts_use_user_runtime_dirs_if_needed() {
 
 cts_load_config() {
   local script_dir local_config local_excludes local_prune_paths
+  local local_exclude_patterns local_exclude_files
 
   script_dir="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
   local_config="${script_dir}/../config/clamdscan-tools.conf"
   local_excludes="${script_dir}/../config/excludes.conf"
   local_prune_paths="${script_dir}/../config/prune-paths.conf"
+  local_exclude_patterns="${script_dir}/../config/exclude-file-patterns.conf"
+  local_exclude_files="${script_dir}/../config/exclude-files.conf"
 
   if [ -f "$CTS_CONFIG_FILE" ]; then
     # shellcheck source=config/clamdscan-tools.conf
@@ -89,6 +94,24 @@ cts_load_config() {
     CTS_CONFIG_FILE="$local_config"
     CTS_EXCLUDES_FILE="$local_excludes"
     CTS_PRUNE_PATHS_FILE="$local_prune_paths"
+    CTS_EXCLUDE_PATTERNS_FILE="$local_exclude_patterns"
+    CTS_EXCLUDE_FILES_FILE="$local_exclude_files"
+  fi
+
+  if [ ! -f "$CTS_EXCLUDES_FILE" ] && [ -f "$local_excludes" ]; then
+    CTS_EXCLUDES_FILE="$local_excludes"
+  fi
+
+  if [ ! -f "$CTS_PRUNE_PATHS_FILE" ] && [ -f "$local_prune_paths" ]; then
+    CTS_PRUNE_PATHS_FILE="$local_prune_paths"
+  fi
+
+  if [ ! -f "$CTS_EXCLUDE_PATTERNS_FILE" ] && [ -f "$local_exclude_patterns" ]; then
+    CTS_EXCLUDE_PATTERNS_FILE="$local_exclude_patterns"
+  fi
+
+  if [ ! -f "$CTS_EXCLUDE_FILES_FILE" ] && [ -f "$local_exclude_files" ]; then
+    CTS_EXCLUDE_FILES_FILE="$local_exclude_files"
   fi
 
   : "${CTS_DEFAULT_TARGETS:=/home}"
@@ -188,84 +211,33 @@ cts_read_nonempty_lines() {
   grep -vE '^[[:space:]]*#|^[[:space:]]*$' "$file_path" || true
 }
 
+cts_expand_config_line() {
+  local raw_line="$1"
+
+  eval "printf '%s\n' \"$raw_line\""
+}
+
 cts_build_find_command_args() {
   local -a prune_dir_paths=()
   local -a prune_dir_names=()
   local -a exclude_file_patterns=()
   local -a exclude_files=()
 
-  prune_dir_paths+=(
-    "/proc"
-    "/sys"
-    "/dev"
-    "/run"
-    "/tmp"
-    "/var/run"
-    "/snap"
-    "/var/lib/snapd"
-    "$HOME/snap"
-    "$HOME/.cache"
-    "$HOME/.local/share/Trash"
-    "$HOME/.gvfs"
-    "$HOME/.steam"
-    "$HOME/.var/app"
-    "$HOME/VirtualBox VMs"
-    "$HOME/.dropbox"
-    "$HOME/.dbus"
-    "$HOME/.npm"
-    "$HOME/.nvm"
-    "$HOME/.pnpm-store"
-    "$HOME/.cargo"
-    "$HOME/.rustup"
-    "$HOME/.sdkman"
-    "$HOME/.local/share/containers"
-    "$HOME/.thumbnails"
-    "$HOME/.config/Code/CachedExtensionVSIXs"
-    "$HOME/.config/Code/Cache"
-    "$HOME/.config/Code/Service Worker/CacheStorage"
-    "$HOME/.config/Code/User/workspaceStorage"
-    "$CTS_INFECTED_DIR"
-  )
-
-  prune_dir_names+=(
-    ".git"
-    ".cache"
-    "node_modules"
-    ".venv"
-    "venv"
-    "dist"
-    "build"
-    ".next"
-    ".nuxt"
-    "coverage"
-    "htmlcov"
-    ".mypy_cache"
-    ".pytest_cache"
-    ".ruff_cache"
-    ".tox"
-    "__pycache__"
-    "gvfs-metadata"
-  )
-
-  exclude_file_patterns+=(
-    "*.lock"
-    "*.iso"
-    "*.img"
-    "*.qcow2"
-    "*.vdi"
-  )
-
-  exclude_files+=(
-    "/swapfile"
-  )
-
   while IFS= read -r line; do
-    prune_dir_names+=( "$line" )
+    prune_dir_names+=( "$(cts_expand_config_line "$line")" )
   done < <(cts_read_nonempty_lines "$CTS_EXCLUDES_FILE")
 
   while IFS= read -r line; do
-    prune_dir_paths+=( "$line" )
+    prune_dir_paths+=( "$(cts_expand_config_line "$line")" )
   done < <(cts_read_nonempty_lines "$CTS_PRUNE_PATHS_FILE")
+
+  while IFS= read -r line; do
+    exclude_file_patterns+=( "$(cts_expand_config_line "$line")" )
+  done < <(cts_read_nonempty_lines "$CTS_EXCLUDE_PATTERNS_FILE")
+
+  while IFS= read -r line; do
+    exclude_files+=( "$(cts_expand_config_line "$line")" )
+  done < <(cts_read_nonempty_lines "$CTS_EXCLUDE_FILES_FILE")
 
   local -a expr=()
   local first=1

@@ -156,15 +156,23 @@ The package installs the following configuration files:
      back to ‘$XDG_STATE_HOME/clamdscan-tools/’ (or
      ‘~/.local/state/clamdscan-tools/’) and
      ‘$XDG_DATA_HOME/clamdscan-tools/’ (or
-     ‘~/.local/share/clamdscan-tools/’).
+     ‘~/.local/share/clamdscan-tools/’).  The script only uses
+     repo-local fallback configuration when the files under
+     ‘/etc/clamdscan-tools/’ do not exist.
 
 ‘/etc/clamdscan-tools/excludes.conf’
      Directory-name exclusions such as ‘.git’, ‘.cache’, ‘gvfs-metadata’
-     or ‘node_modules’.  Built-in defaults also skip transient lock
-     files matching ‘*.lock’.
+     or ‘node_modules’.
 
 ‘/etc/clamdscan-tools/prune-paths.conf’
      Absolute paths to skip entirely, for example ‘/proc’ or ‘/sys’.
+
+‘/etc/clamdscan-tools/exclude-file-patterns.conf’
+     Filename patterns to skip, for example ‘*.lock’ or disk image
+     formats.
+
+‘/etc/clamdscan-tools/exclude-files.conf’
+     Exact file paths to exclude, for example ‘/swapfile’.
 
 
 File: clamdscan-tools.info,  Node: Runtime Files,  Prev: Configuration,  Up: Top
@@ -225,7 +233,7 @@ Node: Commands1677
 Node: clamdscan-progress1853
 Node: clamdscan-watch2989
 Node: Configuration3543
-Node: Runtime Files4550
+Node: Runtime Files4851
 
 End Tag Table
 

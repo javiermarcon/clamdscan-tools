@@ -4,5 +4,7 @@ lib/clamdscan-tools.sh usr/lib/clamdscan-tools/
 config/clamdscan-tools.conf etc/clamdscan-tools/
 config/excludes.conf etc/clamdscan-tools/
 config/prune-paths.conf etc/clamdscan-tools/
+config/exclude-file-patterns.conf etc/clamdscan-tools/
+config/exclude-files.conf etc/clamdscan-tools/
 docs/clamdscan-tools.info usr/share/info/
 debian/clamdscan-tools.tmpfiles usr/lib/tmpfiles.d/clamdscan-tools.conf
