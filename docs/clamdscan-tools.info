@@ -52,7 +52,7 @@ File: clamdscan-tools.info,  Node: Installation,  Next: Commands,  Prev: Overvie
 
 Install the binary package with:
 
-     sudo apt install ./clamdscan-tools_0.2.0_all.deb
+     sudo apt install ./clamdscan-tools_0.2.1_all.deb
 
    Remove it with:
 
