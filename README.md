@@ -325,6 +325,14 @@ dpkg-buildpackage -us -uc -b
 `make package` remains the single source of truth to generate the `.deb`.
 It uses Debian packaging normally, then copies the resulting artifacts into
 `dist/` inside the repo for release and APT publishing workflows.
+It also validates that the latest git tag `v*` matches the version declared in
+`debian/changelog`.
+
+To create the expected release tag from the changelog version:
+
+```bash
+make release-tag
+```
 
 ---
 
@@ -334,6 +342,29 @@ It uses Debian packaging normally, then copies the resulting artifacts into
 
 ```bash
 make lint
+```
+
+### Update changelog and release version
+
+Use the repo helper instead of invoking `dch` bare, so maintainer identity is
+always provided explicitly:
+
+```bash
+make changelog NEW_VERSION=0.2.1 MSG="Fix CI workflow opt-in to Node 24 runtime"
+make build
+make release-tag
+```
+
+`make release-tag` intentionally stays separate from `dch`: release tags should
+point to committed repository state, not to a half-edited working tree.
+
+If you prefer calling `dch` directly, configure it in your user environment:
+
+```bash
+cat >> ~/.devscripts <<'EOF'
+DEBFULLNAME="Javier Marcon"
+DEBEMAIL="javiermarcon@gmail.com"
+EOF
 ```
 
 ### Build web docs locally

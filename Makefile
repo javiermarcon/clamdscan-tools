@@ -1,8 +1,12 @@
 PACKAGE=clamdscan-tools
 VERSION:=$(shell dpkg-parsechangelog -S Version 2>/dev/null)
 DIST_DIR=dist
+LATEST_TAG:=$(shell git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+EXPECTED_TAG=v$(VERSION)
+DEB_FULLNAME=Javier Marcon
+DEB_EMAIL=javiermarcon@gmail.com
 
-.PHONY: build package clean lint sync-version
+.PHONY: build package clean lint sync-version check-version release-tag changelog
 
 build:
 	$(MAKE) sync-version
@@ -15,7 +19,29 @@ sync-version:
 	sed -i -E '1s#^\.TH CLAMDSCAN-WATCH 1 ".*" "clamdscan-tools .*" "User Commands"$$#.TH CLAMDSCAN-WATCH 1 "March 2026" "clamdscan-tools $(VERSION)" "User Commands"#' docs/clamdscan-watch.1
 	makeinfo --no-split --output=docs/clamdscan-tools.info docs/clamdscan-tools.texi
 
-package: sync-version
+check-version:
+	@if [ -n "$(LATEST_TAG)" ] && [ "$(LATEST_TAG)" != "$(EXPECTED_TAG)" ]; then \
+	  echo "ERROR: debian/changelog está en $(VERSION), pero el último tag es $(LATEST_TAG)." >&2; \
+	  echo "ERROR: actualizá debian/changelog o creá el tag correcto antes de correr make package." >&2; \
+	  exit 1; \
+	fi
+
+release-tag:
+	@if git rev-parse "$(EXPECTED_TAG)" >/dev/null 2>&1; then \
+	  echo "ERROR: el tag $(EXPECTED_TAG) ya existe." >&2; \
+	  exit 1; \
+	fi
+	git tag -a "$(EXPECTED_TAG)" -m "Release $(EXPECTED_TAG)"
+
+changelog:
+	@if [ -z "$(NEW_VERSION)" ]; then \
+	  echo "ERROR: usá make changelog NEW_VERSION=X.Y.Z MSG='texto del cambio'" >&2; \
+	  exit 1; \
+	fi
+	@DEBFULLNAME="$(DEB_FULLNAME)" DEBEMAIL="$(DEB_EMAIL)" \
+	  dch -v "$(NEW_VERSION)" "$(if $(MSG),$(MSG),Update changelog)"
+
+package: sync-version check-version
 	dpkg-buildpackage -us -uc -b
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)

@@ -1,3 +1,9 @@
+clamdscan-tools (0.2.1) UNRELEASED; urgency=medium
+
+  * Fix CI workflow opt-in to Node 24 runtime
+
+ -- Javier Marcon <javiermarcon@gmail.com>  Mon, 30 Mar 2026 16:51:00 -0300
+
 clamdscan-tools (0.2.0) unstable; urgency=medium
 
   * Add per-user runtime fallback when system paths are not writable.
