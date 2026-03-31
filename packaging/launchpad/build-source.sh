@@ -43,6 +43,14 @@ git -C "${ROOT_DIR}" archive --format=tar HEAD | tar -xf - -C "${SOURCE_DIR}"
 
 find "${SOURCE_DIR}/.." -maxdepth 1 -type f \
   \( -name '*.changes' -o -name '*.dsc' -o -name '*.tar.*' -o -name '*.buildinfo' \) \
-  -exec cp -f {} "${DIST_DIR}/" \;
+  -exec sh -c '
+    for src do
+      dest="'"${DIST_DIR}"'/$(basename "$src")"
+      if [ "$(readlink -f "$src")" = "$(readlink -f "$dest")" ]; then
+        continue
+      fi
+      cp -f "$src" "$dest"
+    done
+  ' sh {} +
 
 echo "[INFO] Source package generado en ${DIST_DIR}"
