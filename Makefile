@@ -1,12 +1,13 @@
 PACKAGE=clamdscan-tools
 VERSION:=$(shell dpkg-parsechangelog -S Version 2>/dev/null)
+RELEASE_VERSION:=$(shell printf '%s\n' "$(VERSION)" | sed 's/[+~].*$$//')
 DIST_DIR=dist
 LATEST_TAG:=$(shell git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
-EXPECTED_TAG=v$(VERSION)
+EXPECTED_TAG=v$(RELEASE_VERSION)
 DEB_FULLNAME=Javier Marcon
 DEB_EMAIL=javiermarcon@gmail.com
 
-.PHONY: build package clean lint sync-version check-version release-tag changelog
+.PHONY: build package clean lint sync-version check-version release-tag changelog ppa-source ppa-upload
 
 build:
 	$(MAKE) sync-version
@@ -40,6 +41,13 @@ changelog:
 	fi
 	@DEBFULLNAME="$(DEB_FULLNAME)" DEBEMAIL="$(DEB_EMAIL)" \
 	  dch -v "$(NEW_VERSION)" "$(if $(MSG),$(MSG),Update changelog)"
+
+ppa-source:
+	@DEBFULLNAME="$(DEB_FULLNAME)" DEBEMAIL="$(DEB_EMAIL)" \
+	  bash packaging/launchpad/build-source.sh
+
+ppa-upload:
+	@bash packaging/launchpad/upload-source.sh
 
 package: sync-version check-version
 	dpkg-buildpackage -us -uc -b

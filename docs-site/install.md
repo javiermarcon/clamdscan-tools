@@ -64,24 +64,17 @@ sudo apt install clamdscan-tools
 This method is preferable when you want normal `apt update` / `apt upgrade`
 behavior instead of manually downloading every `.deb`.
 
-## Future Launchpad PPA installation
+## Install from Launchpad PPA
 
-Launchpad PPA publication is not active yet, but the documentation and
-packaging layout are prepared so Ubuntu-specific distribution can be added
-later without changing the runtime behavior of the tools.
-
-When that exists, the flow will look more like:
+Ubuntu users can install directly from the published PPA:
 
 ```bash
-sudo add-apt-repository ppa:YOUR_PPA_HERE
+sudo add-apt-repository ppa:javiermarcon/clamdscan-tools
 sudo apt update
 sudo apt install clamdscan-tools
 ```
 
-Until then:
-
-- Debian users: use the release `.deb` or the project APT repo
-- Ubuntu users: use the release `.deb` if dependencies resolve cleanly
+This is the most Ubuntu-native distribution path for the project.
 
 ## Remove or purge
 
@@ -120,8 +113,8 @@ Use this when:
 
 ### Launchpad PPA
 
-Use this later when:
+Use this when:
 
-- Ubuntu-native distribution is published
+- you want Ubuntu-native package installation
 - you want a familiar Ubuntu packaging channel
-- you need tighter integration with Ubuntu userspace expectations
+- you prefer Launchpad builds over manually downloaded `.deb` files

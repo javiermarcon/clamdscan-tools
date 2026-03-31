@@ -10,4 +10,6 @@ chmod 755 /var/lib/clamdscan-tools
 chmod 755 /var/lib/clamdscan-tools/state
 chmod 755 /var/lib/clamdscan-tools/infected
 
+#DEBHELPER#
+
 exit 0

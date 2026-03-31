@@ -52,7 +52,7 @@ The project is prepared to be distributed through more than one channel:
 
 - GitHub Releases with `.deb` artifacts attached to version tags
 - a static, signed APT repository published under GitHub Pages
-- a future Launchpad PPA flow for Ubuntu users
+- a Launchpad PPA for Ubuntu users
 
 These channels share the same package source of truth:
 
@@ -66,11 +66,11 @@ distribution layers on top of that package, not alternate build systems.
 
 ## Documentation map
 
-- [Installation](install.md): install from release `.deb`, APT repo or plan for Launchpad
+- [Installation](install.md): install from release `.deb`, APT repo or Launchpad PPA
 - [Usage](usage.md): scan modes, resume workflow and log inspection
 - [Configuration](configuration.md): how `/etc/clamdscan-tools/` is structured
 - [APT Repository](apt-repo.md): how the signed static repo is built and consumed
-- [Launchpad PPA](launchpad-ppa.md): what is already prepared and what still needs packaging work
+- [Launchpad PPA](launchpad-ppa.md): how the PPA fits alongside Releases and the static APT repo
 - [Development](development.md): local build, validation and publishing workflow
 - [Troubleshooting](troubleshooting.md): realistic operational failures and fixes
 - [Security](security.md): trust model, GPG handling and scanning caveats

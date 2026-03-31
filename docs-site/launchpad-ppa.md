@@ -1,7 +1,10 @@
-# Launchpad PPA roadmap
+# Launchpad PPA
 
-The project is not published to Launchpad yet, but the repository is now
-documented so the next packaging step is clear instead of implicit.
+The project now has a Launchpad PPA upload target:
+
+```text
+ppa:javiermarcon/clamdscan-tools
+```
 
 ## Why Launchpad PPA is different
 
@@ -19,6 +22,7 @@ general, but a Launchpad PPA adds Ubuntu-native distribution:
 - runtime paths and configuration are documented
 - release artifacts are generated from version tags
 - APT repository signing and publication flow already exist
+- source-package helpers now exist for Launchpad uploads
 
 These pieces reduce the amount of work needed to add a PPA later.
 
@@ -36,20 +40,20 @@ Typical concerns:
 
 ### Source package publication
 
-Launchpad expects source uploads, not only binary `.deb` files. That means
-you will need a source-oriented upload flow, typically using:
+Launchpad expects source uploads, not only binary `.deb` files. This repo now
+provides helpers for that:
 
 ```bash
-debuild -S
-dput ppa:YOUR_PPA_HERE ../clamdscan-tools_VERSION_source.changes
+make ppa-source
+make ppa-upload
 ```
 
 ### Versioning strategy
 
-PPAs often use version suffixes such as:
+The helper defaults to PPA-style versions such as:
 
 ```text
-0.2.0-0ubuntu1~ppa1
+0.2.1+ppa1~noble1
 ```
 
 That lets you distinguish:
@@ -69,15 +73,10 @@ publication and potential PPA uploads.
 1. Keep `make package` and Debian packaging healthy on main
 2. Add source-package validation in CI
 3. Test on Ubuntu LTS releases
-4. Introduce Launchpad-specific version suffixes only when needed
+4. bump `~ppaN` when publishing a new source package for the same upstream release
 5. Document which Ubuntu releases are officially supported
 
 ## User-facing expectation
 
-Until a PPA exists, Ubuntu users should install through:
-
-- GitHub Release `.deb`
-- or the static APT repository if the package dependencies resolve cleanly
-
-Once the PPA exists, Ubuntu instructions can point there first while Debian
-systems may continue to prefer the project APT repo or release `.deb`.
+Ubuntu users can now choose the PPA first, while Debian systems may still
+prefer the project APT repo or the release `.deb`.

@@ -76,10 +76,15 @@ sudo apt update
 sudo apt install clamdscan-tools
 ```
 
-### Future Launchpad PPA
+### Install from Launchpad PPA
 
-Launchpad PPA publication is planned for Ubuntu users, but not enabled yet.
-Until then, use either the GitHub Release `.deb` or the project APT repository.
+Ubuntu users can also install from the published PPA:
+
+```bash
+sudo add-apt-repository ppa:javiermarcon/clamdscan-tools
+sudo apt update
+sudo apt install clamdscan-tools
+```
 
 ### Remove
 
@@ -398,6 +403,41 @@ This generates:
 - `site/` for GitHub Pages
 - `site/apt/` for the static APT repository
 - `site/keys/clamdscan-tools-archive-key.asc` for client key import
+
+### Build and upload a Launchpad source package
+
+Generate a source upload for Ubuntu `noble` by default:
+
+```bash
+make ppa-source
+```
+
+This creates a source package under `dist/launchpad/` from a temporary export of
+the current `HEAD`, without rewriting your working tree changelog.
+
+Upload it:
+
+```bash
+make ppa-upload
+```
+
+Optional overrides:
+
+```bash
+UBUNTU_SERIES=oracular \
+PPA_VERSION=0.2.1+ppa2~oracular1 \
+make ppa-source
+```
+
+By default the source build tries to sign with:
+
+```text
+DEBSIGN_KEYID=5E3B821774D744578613925922B4D63898D3A00D
+```
+
+Override it if your Launchpad account uses a different upload key.
+`make ppa-source` also requires a clean git tree, because it exports the current
+committed `HEAD` into a temporary source tree before building the upload.
 
 ### GitHub Actions secrets for APT publishing
 
