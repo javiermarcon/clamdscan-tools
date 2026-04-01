@@ -15,7 +15,7 @@ clamdscan with progress reporting, resumable scans and configurable exclusions.
 
 @titlepage
 @title clamdscan-tools Manual
-@subtitle Version 0.2.1
+@subtitle Version 0.2.2
 @author Javier Marcon
 @page
 @vskip 0pt plus 1filll
@@ -56,7 +56,7 @@ filesystem layout for binaries, configuration, logs and Info documentation.
 Install the binary package with:
 
 @example
-sudo apt install ./clamdscan-tools_0.2.1_all.deb
+sudo apt install ./clamdscan-tools_0.2.2_all.deb
 @end example
 
 Remove it with:

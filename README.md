@@ -51,7 +51,7 @@ This tool solves those limitations while remaining lightweight and portable.
 ### Install from .deb
 
 ```bash
-sudo apt install ./clamdscan-tools_0.2.1_all.deb
+sudo apt install ./clamdscan-tools_0.2.2_all.deb
 ```
 
 ### Install from the project APT repository
@@ -93,8 +93,8 @@ For non-Debian distributions you can install from the release tarball instead
 of the `.deb` package:
 
 ```bash
-tar -xzf clamdscan-tools-0.2.1.tar.gz
-cd clamdscan-tools-0.2.1
+tar -xzf clamdscan-tools-0.2.2.tar.gz
+cd clamdscan-tools-0.2.2
 sudo PREFIX=/usr bash packaging/tarball/install.sh
 ```
 

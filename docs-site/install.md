@@ -13,7 +13,7 @@ This is the fastest path when you only want to install a released build.
 2. Install it with `apt` so dependencies are resolved cleanly.
 
 ```bash
-sudo apt install ./clamdscan-tools_0.2.1_all.deb
+sudo apt install ./clamdscan-tools_0.2.2_all.deb
 ```
 
 Expected installed paths include:
@@ -35,8 +35,8 @@ want to package the project outside the Debian toolchain.
 3. Run the generic installer with your desired prefix.
 
 ```bash
-tar -xzf clamdscan-tools-0.2.1.tar.gz
-cd clamdscan-tools-0.2.1
+tar -xzf clamdscan-tools-0.2.2.tar.gz
+cd clamdscan-tools-0.2.2
 sudo PREFIX=/usr bash packaging/tarball/install.sh
 ```
 

@@ -1,8 +1,9 @@
-clamdscan-tools (0.2.1) UNRELEASED; urgency=medium
+clamdscan-tools (0.2.2) noble; urgency=medium
 
   * Fix CI workflow opt-in to Node 24 runtime
+  * Add tar.gz source
 
- -- Javier Marcon <javiermarcon@gmail.com>  Mon, 30 Mar 2026 16:51:00 -0300
+ -- Javier Marcon <javiermarcon@gmail.com>  Wed, 01 Apr 2026 18:33:21 -0300
 
 clamdscan-tools (0.2.0) unstable; urgency=medium
 
