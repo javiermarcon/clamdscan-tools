@@ -1,9 +1,9 @@
 # clamdscan-tools
 
-`clamdscan-tools` is a Debian-oriented wrapper around `clamdscan` that adds
-progress reporting, resumable state, configurable exclusions, log inspection
-and packaging suitable for distribution through GitHub Releases and a static
-APT repository.
+`clamdscan-tools` is a Linux wrapper around `clamdscan` that adds progress
+reporting, resumable state, configurable exclusions, log inspection and
+packaging suitable for Debian-family systems plus a portable `tar.gz` install
+path for other distributions.
 
 ## What it solves
 
@@ -53,20 +53,27 @@ The project is prepared to be distributed through more than one channel:
 - GitHub Releases with `.deb` artifacts attached to version tags
 - a static, signed APT repository published under GitHub Pages
 - a Launchpad PPA for Ubuntu users
+- a portable source tarball for manual installs and non-Debian packaging
 
-These channels share the same package source of truth:
+The Debian-family channels share the same package source of truth:
 
 ```bash
 make package
 ```
 
-The Debian package build remains the canonical way to generate the binary
-package. GitHub Releases, the static APT repo and future PPA publication are
-distribution layers on top of that package, not alternate build systems.
+For portable source distribution, the repo also exports a tarball directly from
+committed `HEAD`:
+
+```bash
+make source-tarball
+```
+
+That tarball is intended for manual installs and packaging work on systems that
+do not consume `.deb` artifacts directly.
 
 ## Documentation map
 
-- [Installation](install.md): install from release `.deb`, APT repo or Launchpad PPA
+- [Installation](install.md): install from release `.deb`, source `tar.gz`, APT repo or Launchpad PPA
 - [Usage](usage.md): scan modes, resume workflow and log inspection
 - [Configuration](configuration.md): how `/etc/clamdscan-tools/` is structured
 - [APT Repository](apt-repo.md): how the signed static repo is built and consumed

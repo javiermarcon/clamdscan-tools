@@ -5,6 +5,17 @@
 Yes, if you only need manual installs. The APT repository is useful when you
 want normal `apt` updates across one or more machines.
 
+## Is there a source tarball for non-Debian systems?
+
+Yes. The repository can export a versioned source tarball with:
+
+```bash
+make source-tarball
+```
+
+That artifact is meant for systems such as Slackware, or for maintainers who
+need to stage files into another packaging format.
+
 ## Why keep `docs/` and `docs-site/` separate?
 
 Because they serve different outputs:

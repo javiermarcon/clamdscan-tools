@@ -7,15 +7,20 @@ EXPECTED_TAG=v$(RELEASE_VERSION)
 DEB_FULLNAME=Javier Marcon
 DEB_EMAIL=javiermarcon@gmail.com
 
-.PHONY: build package clean lint sync-version check-version release-tag changelog ppa-source ppa-upload
+.PHONY: build package clean lint sync-version check-version release-tag changelog ppa-source ppa-upload source-tarball
 
 build:
 	$(MAKE) sync-version
 
 sync-version:
 	sed -i -E 's#^sudo apt install \./clamdscan-tools_.*_all\.deb$$#sudo apt install ./clamdscan-tools_$(VERSION)_all.deb#' README.md
+	sed -i -E 's#^tar -xzf clamdscan-tools-.*\.tar\.gz$$#tar -xzf clamdscan-tools-$(RELEASE_VERSION).tar.gz#' README.md
+	sed -i -E 's#^cd clamdscan-tools-.*$$#cd clamdscan-tools-$(RELEASE_VERSION)#' README.md
 	sed -i -E 's#^@subtitle Version .*$$#@subtitle Version $(VERSION)#' docs/clamdscan-tools.texi
 	sed -i -E 's#^sudo apt install \./clamdscan-tools_.*_all\.deb$$#sudo apt install ./clamdscan-tools_$(VERSION)_all.deb#' docs/clamdscan-tools.texi
+	sed -i -E 's#^sudo apt install \./clamdscan-tools_.*_all\.deb$$#sudo apt install ./clamdscan-tools_$(VERSION)_all.deb#' docs-site/install.md
+	sed -i -E 's#^tar -xzf clamdscan-tools-.*\.tar\.gz$$#tar -xzf clamdscan-tools-$(RELEASE_VERSION).tar.gz#' docs-site/install.md
+	sed -i -E 's#^cd clamdscan-tools-.*$$#cd clamdscan-tools-$(RELEASE_VERSION)#' docs-site/install.md
 	sed -i -E '1s#^\.TH CLAMDSCAN-PROGRESS 1 ".*" "clamdscan-tools .*" "User Commands"$$#.TH CLAMDSCAN-PROGRESS 1 "March 2026" "clamdscan-tools $(VERSION)" "User Commands"#' docs/clamdscan-progress.1
 	sed -i -E '1s#^\.TH CLAMDSCAN-WATCH 1 ".*" "clamdscan-tools .*" "User Commands"$$#.TH CLAMDSCAN-WATCH 1 "March 2026" "clamdscan-tools $(VERSION)" "User Commands"#' docs/clamdscan-watch.1
 	makeinfo --no-split --output=docs/clamdscan-tools.info docs/clamdscan-tools.texi
@@ -48,6 +53,9 @@ ppa-source:
 
 ppa-upload:
 	@bash packaging/launchpad/upload-source.sh
+
+source-tarball:
+	@bash packaging/tarball/build-tarball.sh
 
 package: sync-version check-version
 	dpkg-buildpackage -us -uc -b

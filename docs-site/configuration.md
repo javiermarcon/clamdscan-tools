@@ -155,7 +155,8 @@ clamdscan-progress --dry-run ~/Descargas
 ## Debian and Ubuntu notes
 
 - Debian systems typically match the package defaults most closely
-- Ubuntu usually works the same for local installs, but future Launchpad PPA
-  publication may require Ubuntu-specific packaging metadata and build testing
-- none of these configuration files depend on GitHub Releases vs APT repo vs PPA;
-  those are distribution channels, not different runtime behaviors
+- Ubuntu usually works the same for local installs, but Launchpad PPA
+  publication still benefits from Ubuntu-specific packaging validation
+- none of these configuration files depend on GitHub Releases vs APT repo vs PPA
+  vs source tarball; those are distribution channels, not different runtime
+  behaviors

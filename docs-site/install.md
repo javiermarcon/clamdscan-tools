@@ -1,8 +1,9 @@
 # Installation
 
-`clamdscan-tools` targets Debian-family systems where `clamav-daemon`,
-`clamdscan`, GNU `find`, systemd-compatible layouts and Debian packaging are
-normal operational choices.
+`clamdscan-tools` targets Linux systems where `clamdscan`, GNU `find` and a
+standard `/etc` + `/var` filesystem layout are available. Debian-family
+packaging is the primary distribution channel, but a portable `tar.gz` source
+install path also exists for non-Debian systems.
 
 ## Install from GitHub Release `.deb`
 
@@ -12,7 +13,7 @@ This is the fastest path when you only want to install a released build.
 2. Install it with `apt` so dependencies are resolved cleanly.
 
 ```bash
-sudo apt install ./clamdscan-tools_0.2.0_all.deb
+sudo apt install ./clamdscan-tools_0.2.1_all.deb
 ```
 
 Expected installed paths include:
@@ -24,6 +25,36 @@ Expected installed paths include:
 - `/usr/share/man/man1/`
 - `/usr/share/info/clamdscan-tools.info.gz`
 
+## Install from source `tar.gz`
+
+This is the preferred path for distributions such as Slackware, or when you
+want to package the project outside the Debian toolchain.
+
+1. Download the release tarball.
+2. Extract it.
+3. Run the generic installer with your desired prefix.
+
+```bash
+tar -xzf clamdscan-tools-0.2.1.tar.gz
+cd clamdscan-tools-0.2.1
+sudo PREFIX=/usr bash packaging/tarball/install.sh
+```
+
+The installer copies:
+
+- `/usr/bin/clamdscan-progress`
+- `/usr/bin/clamdscan-watch`
+- `/usr/lib/clamdscan-tools/clamdscan-tools.sh`
+- `/etc/clamdscan-tools/`
+- `/usr/share/man/man1/`
+- `/usr/share/info/clamdscan-tools.info`
+
+For package builders, you can stage into a package root:
+
+```bash
+DESTDIR="$PKG" PREFIX=/usr bash packaging/tarball/install.sh
+```
+
 ## Install dependencies first
 
 On a fresh system, make sure ClamAV and runtime tooling exist:
@@ -34,6 +65,14 @@ sudo apt install clamav-daemon tracker3
 ```
 
 `tracker3` is optional; the tools work without it.
+
+Outside Debian-family systems, install the equivalent runtime pieces manually:
+
+- Bash
+- ClamAV with `clamdscan`
+- GNU `find`, `grep`, `sed`, `awk`
+- `python3`, `procps`, `util-linux`
+- `tracker3` optionally
 
 ## Install from the project APT repository
 
@@ -118,3 +157,11 @@ Use this when:
 - you want Ubuntu-native package installation
 - you want a familiar Ubuntu packaging channel
 - you prefer Launchpad builds over manually downloaded `.deb` files
+
+### Source `tar.gz`
+
+Use this when:
+
+- you are on a non-Debian distribution such as Slackware
+- you need a generic source artifact instead of a Debian package
+- you want to stage files into another packaging system with `DESTDIR`

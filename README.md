@@ -15,6 +15,7 @@ Advanced wrapper for `clamdscan` providing:
 - Proper behavior with and without root privileges
 - Debian package support (.deb)
 - Static signed APT repository support
+- Portable source tarball support (`.tar.gz`)
 - MkDocs documentation site for GitHub Pages
 - Manual pages and GNU info documentation
 
@@ -84,6 +85,25 @@ Ubuntu users can also install from the published PPA:
 sudo add-apt-repository ppa:javiermarcon/clamdscan-tools
 sudo apt update
 sudo apt install clamdscan-tools
+```
+
+### Install from source `tar.gz`
+
+For non-Debian distributions you can install from the release tarball instead
+of the `.deb` package:
+
+```bash
+tar -xzf clamdscan-tools-0.2.1.tar.gz
+cd clamdscan-tools-0.2.1
+sudo PREFIX=/usr bash packaging/tarball/install.sh
+```
+
+This installs the shell scripts, default config, manpages and info docs without
+depending on Debian packaging tools. For package builders, the installer also
+supports staging with `DESTDIR`:
+
+```bash
+DESTDIR="$PKG" PREFIX=/usr bash packaging/tarball/install.sh
 ```
 
 ### Remove
@@ -438,6 +458,17 @@ DEBSIGN_KEYID=5E3B821774D744578613925922B4D63898D3A00D
 Override it if your Launchpad account uses a different upload key.
 `make ppa-source` also requires a clean git tree, because it exports the current
 committed `HEAD` into a temporary source tree before building the upload.
+
+### Build a release tarball
+
+Generate a portable source tarball from the current committed `HEAD`:
+
+```bash
+make source-tarball
+```
+
+This creates `dist/tarball/clamdscan-tools-<version>.tar.gz`, which can be used
+for manual installs or to build packages on non-Debian systems.
 
 ### GitHub Actions secrets for APT publishing
 
