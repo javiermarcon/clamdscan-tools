@@ -7,7 +7,7 @@ EXPECTED_TAG=v$(RELEASE_VERSION)
 DEB_FULLNAME=Javier Marcon
 DEB_EMAIL=javiermarcon@gmail.com
 
-.PHONY: build package clean lint sync-version check-version release-tag changelog ppa-source ppa-upload source-tarball
+.PHONY: build package clean lint sync-version check-version release-tag changelog ppa-source ppa-upload source-tarball release
 
 build:
 	$(MAKE) sync-version
@@ -56,6 +56,10 @@ ppa-upload:
 
 source-tarball:
 	@bash packaging/tarball/build-tarball.sh
+
+release:
+	@DEBFULLNAME="$(DEB_FULLNAME)" DEBEMAIL="$(DEB_EMAIL)" \
+	  bash packaging/release.sh
 
 package: sync-version check-version
 	dpkg-buildpackage -us -uc -b

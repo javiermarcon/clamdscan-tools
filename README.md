@@ -383,6 +383,32 @@ make release-tag
 `make release-tag` intentionally stays separate from `dch`: release tags should
 point to committed repository state, not to a half-edited working tree.
 
+For the full release flow in one command:
+
+```bash
+make release NEW_VERSION=0.2.1 MSG="Fix CI workflow opt-in to Node 24 runtime"
+```
+
+That target:
+
+- updates `debian/changelog`
+- syncs versioned docs and generated info files
+- marks the changelog entry as released
+- creates the release commit
+- creates git tag `vX.Y.Z`
+- builds `dist/*.deb`
+- builds `dist/tarball/*.tar.gz`
+- builds `dist/launchpad/*` for Launchpad PPA
+
+If you want to skip the Launchpad source package in a particular run:
+
+```bash
+RELEASE_PPA_SOURCE=0 make release NEW_VERSION=0.2.1 MSG="Fix CI workflow opt-in to Node 24 runtime"
+```
+
+`make release` requires a clean git tree before it starts, because it creates a
+commit and tag automatically.
+
 If you prefer calling `dch` directly, configure it in your user environment:
 
 ```bash

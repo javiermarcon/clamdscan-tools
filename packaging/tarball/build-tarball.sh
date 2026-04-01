@@ -9,8 +9,9 @@ TARBALL_VERSION="${TARBALL_VERSION:-${BASE_VERSION}}"
 ARCHIVE_BASENAME="${PACKAGE}-${TARBALL_VERSION}"
 ARCHIVE_PATH="${DIST_DIR}/${ARCHIVE_BASENAME}.tar.gz"
 
-if [ -n "$(git -C "${ROOT_DIR}" status --short)" ]; then
-  echo "ERROR: el repositorio tiene cambios sin commit." >&2
+if ! git -C "${ROOT_DIR}" diff --quiet --ignore-submodules -- || \
+   ! git -C "${ROOT_DIR}" diff --cached --quiet --ignore-submodules --; then
+  echo "ERROR: el repositorio tiene cambios trackeados sin commit." >&2
   echo "ERROR: make source-tarball exporta HEAD; committeá primero lo que querés publicar." >&2
   exit 1
 fi

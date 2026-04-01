@@ -123,11 +123,10 @@ This is intentionally separate from `build-deb.yml`.
 
 ## Suggested release flow
 
-1. update `debian/changelog`
-2. run `make lint`
-3. run `make package`
-4. commit changes
-5. push `main`
-6. create and push tag `vX.Y.Z`
-7. let `build-deb.yml` publish the release asset
-8. let `publish-pages-apt.yml` publish the Pages site and APT repo
+1. run `make lint`
+2. run `make release NEW_VERSION=X.Y.Z MSG="release notes"`
+3. if needed, disable Launchpad source generation with `RELEASE_PPA_SOURCE=0`
+4. push `main`
+5. push tag `vX.Y.Z`
+6. let `build-deb.yml` publish the release asset
+7. let `publish-pages-apt.yml` publish the Pages site and APT repo

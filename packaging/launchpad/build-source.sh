@@ -23,8 +23,9 @@ if ! command -v dch >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ -n "$(git -C "${ROOT_DIR}" status --short)" ]; then
-  echo "ERROR: el repositorio tiene cambios sin commit." >&2
+if ! git -C "${ROOT_DIR}" diff --quiet --ignore-submodules -- || \
+   ! git -C "${ROOT_DIR}" diff --cached --quiet --ignore-submodules --; then
+  echo "ERROR: el repositorio tiene cambios trackeados sin commit." >&2
   echo "ERROR: make ppa-source exporta HEAD; committeá primero lo que querés subir al PPA." >&2
   exit 1
 fi
